@@ -1,0 +1,28 @@
+---
+resources:
+- name: web-app-repo
+  type: git
+  source:
+    uri: {{web-app-url}}
+    branch: master
+    private_key: {{github-private-key}}
+- name: SnW-pcf19
+  type: cf
+  source:
+    api: {{cf-api}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-organization}}
+    space: {{cf-space}}
+    skip_cert_check: true
+
+jobs:
+- name: deploy-app-job
+  serial: true
+  plan:
+  - {get: web-app-repo, trigger: true}
+  - put: SnW-pcf19
+    params:
+      manifest: web-app-repo/manifest.yml
+      path: web-app-repo
+
